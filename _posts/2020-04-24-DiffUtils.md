@@ -1,3 +1,8 @@
+---
+layout: post
+title:  "Diff Util "
+---
+
 # Diff Util 
 
 `Es una clase de utlidad usada para calcular la diferencia entre dos listas y generar una nueva lista con las operaciones de actualización para convertir la primer lista en la segunda.`
