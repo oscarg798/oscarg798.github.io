@@ -6,7 +6,7 @@ plugins:
   - jekyll-github-metadata
 
 permalink: /:year/:month/:day/:title/
-
+markdown: redcarpet
 defaults:
   -
     scope:

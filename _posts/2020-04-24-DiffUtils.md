@@ -1,9 +1,9 @@
 ---
 layout: post
 title:  "Diff Util "
+categories: [Android, Kotlin]
+tags: [Android, Kotlin,Diff]
 ---
-
-# Diff Util 
 
 `Es una clase de utlidad usada para calcular la diferencia entre dos listas y generar una nueva lista con las operaciones de actualización para convertir la primer lista en la segunda.`
 
@@ -35,156 +35,29 @@ Si queremos usar esta utilidad necesitaremos crear una clase que extienda `DiffU
 
 ## Muestrame el codigo
 
-Supongamos que tenemos la siguiente clase
+Supongamos que tenemos la siguiente clase:
 
-	
-~~~~
-
-data class ViewProduct(
-    val id: String,
-    val name: String,
-    val description: String,
-    val quantity: Int
-)
-	
-~~~~
+<script src="https://gist.github.com/oscarg798/b3e37a9b389aa2209d72ad0df417514c.js"></script>
 
 Esta clase representa un producto, que se mostrara en una lista de productos, a los cuales se los podra actualizar su cantidad. 
 
 La implementacion de `DiffUtil.Callback` para una lista de `ViewProduct` seria: 
 
 	
-~~~~
-class ProductDiffUtilCallback(
-    private val oldProducts: List<ViewProduct>,
-    private val newProducts: List<ViewProduct>
-) : DiffUtil.Callback() {
-
-    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
-        oldProducts[oldItemPosition].id == newProducts[newItemPosition].id
-
-    override fun getOldListSize(): Int = oldProducts.size
-
-    override fun getNewListSize(): Int = newProducts.size
-
-    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
-        oldProducts[oldItemPosition] == newProducts[newItemPosition]
-
-    override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any? {
-        val oldItem = oldProducts[oldItemPosition]
-        val newItem = newProducts[newItemPosition]
-
-        if (oldItem.quantityInCart != newItem.quantityInCart) {
-            return UPDATE_QUANTITY
-        }
-
-        return null
-    }
-}
-
-private const val UPDATE_QUANTITY = 1
-~~~~
+<script src="https://gist.github.com/oscarg798/39c7e405138f2479c18ab37304619e0f.js"></script>
 
 Los primeros 4 metodos son realmente simples, pero prestemos atencion en particual a `getChangePayload`
 
-	
-~~~~
-override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any? {
-        val oldItem = oldProducts[oldItemPosition]
-        val newItem = newProducts[newItemPosition]
-
-        if (oldItem.quantityInCart != newItem.quantityInCart) {
-            return UPDATE_QUANTITY
-        }
-
-        return null
-    }
-	
-~~~~
+<script src="https://gist.github.com/oscarg798/7f867091d18e4841f137ce5fae774923.js"></script>
 
 Llegados a este punto cuando este metodo se llame significara que tenemos dos elementos que son el mismo, pero su contenido difiere; en nuestro ejemplo solo nos preocupamos por la cantidad de los productos, que finalmente sera la propiedad que queremos actualizar en la vista si esta misma cambia. Si esta cambio simplemente devolvemos un `entero` de lo controlario `null`. 
 
 Luego que tenemos nuestro `DiffUtil.Callback`, ya podemos usarlo en nuestro adaptor, el cual tendra unos pequeños cambios a lo que usalmente acostumbramos a escribir. 
 
-	
-~~~~
-class ProductAdapter(
-    private val products: ArrayList<ViewProduct>
-) : RecyclerView.Adapter<ProductViewHolder>() {
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
-        return ProductViewHolder(
-            LayoutInflater.from(parent.context).inflate(R.layout.product_item, parent, false)
-        )
-    }
-
-    override fun getItemCount(): Int = products.size
-
-    override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
-        holder.bind(products[position])
-    }
-
-    override fun onBindViewHolder(
-        holder: ProductViewHolder,
-        position: Int,
-        payloads: MutableList<Any>
-    ) {
-        if (payloads.isEmpty()) {
-            onBindViewHolder(holder, position)
-        } else {
-            for (data in payloads) {
-                when (data as Int) {
-                    INVALID_PRODUCT_POSITION -> holder.updateProductQuantity(products[position].quantityInCart)
-                }
-            }
-        }
-    }
-
-    fun updateProducts(products: List<ViewProduct>) {
-        val result = DiffUtil.calculateDiff(ProductDiffUtilCallback(this.products, products))
-        result.dispatchUpdatesTo(this)
-        this.products.clear()
-        this.products.addAll(products)
-    }
-    
-    fun removeProduct(product: ViewProduct) {
-        val index = products.indexOf(product)
-
-        if (index == INVALID_PRODUCT_POSITION) {
-            return
-        }
-
-        products.removeAt(index)
-        notifyItemRemoved(index)
-    }
-
-    companion object {
-        private const val INVALID_PRODUCT_POSITION = 1
-    }
-}
-	
-~~~~
+<script src="https://gist.github.com/oscarg798/9d617fbaa9a591ac20a4bd0d37afd47b.js"></script>
 
 La principal diferencia de este adaptador es que como podemos observar, ahora el metodo **onBindViewHolder** recibira un parametro extra *payloads* que sera la información o el payload que utilizamos como propiedad de retorno en el metodo **getChangePayload** de nuestro DiffUtil.Callback. El resto sera lo msimo a lo que ya estamos acostumbrados al escribir un adaptador para un **RecyclerView** 
 
-	
-~~~~
-   override fun onBindViewHolder(
-        holder: ProductViewHolder,
-        position: Int,
-        payloads: MutableList<Any>
-    ) {
-        if (payloads.isEmpty()) {
-            onBindViewHolder(holder, position)
-        } else {
-            for (data in payloads) {
-                when (data as Int) {
-                    INVALID_PRODUCT_POSITION -> holder.updateProductQuantity(products[position].quantityInCart)
-                }
-            }
-        }
-    }
-	
-~~~~
+<script src="https://gist.github.com/oscarg798/b2c85f73cb139b521e72d4041f236709.js"></script>
 
 
