@@ -32,7 +32,8 @@ Si queremos usar esta utilidad necesitaremos crear una clase que extienda `DiffU
 
 Supongamos que tenemos la siguiente clase
 
-```kotlin
+	
+~~~~
 
 data class ViewProduct(
     val id: String,
@@ -40,13 +41,15 @@ data class ViewProduct(
     val description: String,
     val quantity: Int
 )
-```
+	
+~~~~
 
 Esta clase representa un producto, que se mostrara en una lista de productos, a los cuales se los podra actualizar su cantidad. 
 
 La implementacion de `DiffUtil.Callback` para una lista de `ViewProduct` seria: 
 
-```kotlin
+	
+~~~~
 class ProductDiffUtilCallback(
     private val oldProducts: List<ViewProduct>,
     private val newProducts: List<ViewProduct>
@@ -75,11 +78,12 @@ class ProductDiffUtilCallback(
 }
 
 private const val UPDATE_QUANTITY = 1
-```
+~~~~
 
 Los primeros 4 metodos son realmente simples, pero prestemos atencion en particual a `getChangePayload`
 
-```kotlin
+	
+~~~~
 override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any? {
         val oldItem = oldProducts[oldItemPosition]
         val newItem = newProducts[newItemPosition]
@@ -90,13 +94,15 @@ override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any? 
 
         return null
     }
-```
+	
+~~~~
 
 Llegados a este punto cuando este metodo se llame significara que tenemos dos elementos que son el mismo, pero su contenido difiere; en nuestro ejemplo solo nos preocupamos por la cantidad de los productos, que finalmente sera la propiedad que queremos actualizar en la vista si esta misma cambia. Si esta cambio simplemente devolvemos un `entero` de lo controlario `null`. 
 
 Luego que tenemos nuestro `DiffUtil.Callback`, ya podemos usarlo en nuestro adaptor, el cual tendra unos pequeños cambios a lo que usalmente acostumbramos a escribir. 
 
-```kotlin
+	
+~~~~
 class ProductAdapter(
     private val products: ArrayList<ViewProduct>
 ) : RecyclerView.Adapter<ProductViewHolder>() {
@@ -151,11 +157,13 @@ class ProductAdapter(
         private const val INVALID_PRODUCT_POSITION = 1
     }
 }
-```
+	
+~~~~
 
 La principal diferencia de este adaptador es que como podemos observar, ahora el metodo **onBindViewHolder** recibira un parametro extra *payloads* que sera la información o el payload que utilizamos como propiedad de retorno en el metodo **getChangePayload** de nuestro DiffUtil.Callback. El resto sera lo msimo a lo que ya estamos acostumbrados al escribir un adaptador para un **RecyclerView** 
 
-```kotlin
+	
+~~~~
    override fun onBindViewHolder(
         holder: ProductViewHolder,
         position: Int,
@@ -171,6 +179,7 @@ La principal diferencia de este adaptador es que como podemos observar, ahora el
             }
         }
     }
-```
+	
+~~~~
 
 
