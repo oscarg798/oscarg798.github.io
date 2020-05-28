@@ -15,25 +15,8 @@ o se puede usar Fastlane, en este caso usaremos Fastlane por la facilidad
 6. Abrir el archivo Fastfile en un editor de texto, este archivo esta en `my_proyect`/fastlane/Fastfile
 7. Copia el siguiente fragmento de codigo en el archivo 
 
-```ruby 
-fastlane_version "2.68.0"
-default_platform :android
+<script src="https://gist.github.com/oscarg798/4fe7a6e4e72edc714b7acad4cea263b0.js"></script>
 
-platform :android do
-  
-    lane :firebase do
-        
-        build_android_app(task: "assembleDebug")
-
-        firebase_app_distribution(
-            app: "1:112:android:123",
-            debug: true,
-            groups: "group",
-            firebase_cli_path: "/usr/local/bin/firebase"
-        )
-    end
-end
-```
 * Donde `lane :nighthold do` es el nombre de la tarea que ejecutaremos
 * `build_android_app(task: "assembleDebug")` es la linea que ejecutara la tarea para la variante del apk que queremos crear
 * `app: "1:112:android:123"` es el identificador de nuestro proyecto de android en firebase, este se puede obtener clickeando el icono de android en firebase y dentro de la configuracion de dicha applicación
